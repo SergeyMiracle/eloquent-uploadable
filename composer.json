@@ -1,0 +1,20 @@
+{
+    "name": "sergeymiracle/eloquent-uploadable",
+    "description": "A trait to automatically handle file uploads for Laravel models.",
+    "require": {
+        "php": "5.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SergeyMiracle",
+            "email": "sergeymiracle@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "SergeyMiracle\\Uploadable\\": "src/"
+        }
+    }
+}
