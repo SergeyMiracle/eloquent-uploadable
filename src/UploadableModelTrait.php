@@ -42,11 +42,21 @@ trait UploadableModelTrait
                     }
 
                     $this->attributes[$key] = json_encode($output);
+                } else {
+                    $this->attributes[$key] = $this->moveFile($files);
                 }
-
-
-                $this->attributes[$key] = $this->moveFile($files);
             }
+        }
+
+        $this->performCrop();
+    }
+
+    private function performCrop()
+    {
+        if (!$this->cropped) return;
+
+        foreach ($this->cropped as $key => $attr) {
+            \Image::make(public_path($this->attributes[$key]))->fit($attr['width'], $attr['height'])->save();
         }
     }
 
