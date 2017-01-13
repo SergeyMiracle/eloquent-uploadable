@@ -45,10 +45,10 @@ trait UploadableModelTrait
                 } else {
                     $this->attributes[$key] = $this->moveFile($files);
                 }
+
+                $this->performCrop();
             }
         }
-
-        $this->performCrop();
     }
 
     private function performCrop()
