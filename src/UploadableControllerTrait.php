@@ -43,7 +43,7 @@ trait UploadableControllerTrait
     /**
      * @return string
      */
-    private function getUploadDir(): string
+    private function getUploadDir()
     {
         $date = new Carbon();
         return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
@@ -58,5 +58,17 @@ trait UploadableControllerTrait
         $path = pathinfo($file);
 
         return uniqid() . '_' . str_slug($path['filename'], '_') . '.' . $path['extension'];
+    }
+
+    /**
+     * Remove file
+     *
+     * @param $file
+     */
+    private function deleteIfExists($file)
+    {
+        if (file_exists($file) && is_file($file)) {
+            unlink($file);
+        }
     }
 }
