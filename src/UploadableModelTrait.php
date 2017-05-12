@@ -145,7 +145,7 @@ trait UploadableModelTrait
     {
         if (str_contains($this->original[$key], 'storage')) return true;
 
-        if (is_json($this->original[$key])) {
+        if ($this->is_json($this->original[$key])) {
             $key = json_decode($this->original[$key]);
 
             foreach ($key as $path) {
@@ -184,5 +184,9 @@ trait UploadableModelTrait
     public function setUploadDir(string $upload_dir)
     {
         $this->upload_dir = $upload_dir;
+    }
+
+    private function is_json($string) {
+        return is_array(json_decode($string, true));
     }
 }
