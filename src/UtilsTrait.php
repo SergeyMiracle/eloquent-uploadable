@@ -2,6 +2,8 @@
 
 namespace SergeyMiracle\Uploadable;
 
+use Carbon\Carbon;
+
 trait UtilsTrait
 {
     private function perfomOptimize($path)
