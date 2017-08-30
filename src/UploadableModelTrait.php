@@ -4,7 +4,6 @@ namespace SergeyMiracle\Uploadable;
 
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 trait UploadableModelTrait
 {

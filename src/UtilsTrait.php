@@ -3,6 +3,7 @@
 namespace SergeyMiracle\Uploadable;
 
 use Carbon\Carbon;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 trait UtilsTrait
 {
