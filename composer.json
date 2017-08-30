@@ -18,5 +18,18 @@
         "psr-4": {
             "SergeyMiracle\\Uploadable\\": "src/"
         }
+    },
+    "extra": {
+      "laravel": {
+        "providers": [
+          "SergeyMiracle\\Uploadable\\UploadableServiceProvider"
+        ]
+      }
+    },
+    "suggest": {
+        "spatie/image-optimizer": "Easily optimize images using PHP"
+    },
+    "config": {
+        "sort-packages": true
     }
 }

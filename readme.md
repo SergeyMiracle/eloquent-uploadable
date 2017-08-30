@@ -15,7 +15,8 @@ class Post extends Model {
   protected $uploadables = ['featured_image'];
 
   protected $upload_dir = '.images';
-  
+
+  // optional
   protected $cropped = [
           'featured_image' => ['width' => 25, 'height' => 25]
       ];
@@ -38,7 +39,7 @@ Setup 'upload' disk in `config/filesystems.php`
 
         'upload' => [
             'driver' => 'local',
-            'root' => public_path('upload'),
+            'root' => public_path(config('uploadable.root')),
             'visibility' => 'public',
         ],
 
@@ -46,14 +47,17 @@ Setup 'upload' disk in `config/filesystems.php`
     ]
 ```
 
+
 On saving array of files, a json encoded string saved in database.
 
 Includes uploadable trait for controller - `UploadableControllerTrait`
 UploadableControllerTrait has two methods: `moveFile` and `moveImage`
-Both expects `UploadedFile` instance. moveImage methods crops image.
+Both expects `UploadedFile` instance. moveImage method crops image.
 
 ```
 $this->moveFile($request->file('image'))
 
 $this->moveImage($request->file('image'), $width, $height)
 ```
+
+If you want to use image optimization install `spatie/image-optimizer` and set optimization to true in config.

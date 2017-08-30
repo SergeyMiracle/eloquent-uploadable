@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 trait UploadableControllerTrait
 {
+    use UtilsTrait;
+
     /**
      * Save file on disk
      *
@@ -21,7 +23,13 @@ trait UploadableControllerTrait
             throw new FileException($e->getMessage());
         }
 
-        return '/upload/' . $path;
+        $path = config('uploadable.root') . $path;
+
+        if (config('uploadable.images.optimize') && getimagesize(public_path($path))) {
+            $this->perfomOptimize(public_path($path));
+        }
+
+        return $path;
     }
 
     /**
@@ -38,26 +46,6 @@ trait UploadableControllerTrait
         \Image::make(public_path($path))->fit($width, $height)->save();
 
         return $path;
-    }
-
-    /**
-     * @return string
-     */
-    private function getUploadDir()
-    {
-        $date = new Carbon();
-        return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
-    }
-
-    /**
-     * @param $file string
-     * @return string
-     */
-    private function createFileName($file)
-    {
-        $path = pathinfo($file);
-
-        return uniqid() . '_' . str_slug($path['filename'], '_') . '.' . $path['extension'];
     }
 
     /**

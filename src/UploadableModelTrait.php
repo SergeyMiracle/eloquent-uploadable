@@ -4,9 +4,12 @@ namespace SergeyMiracle\Uploadable;
 
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 trait UploadableModelTrait
 {
+    use UtilsTrait;
+
     /**
      * Boot the trait's observer.
      *
@@ -88,8 +91,15 @@ trait UploadableModelTrait
             throw new FileException($e->getMessage());
         }
 
-        return '/upload/' . $path;
+        $path = config('uploadable.root') . $path;
+
+        if (config('uploadable.images.optimize') && getimagesize(public_path($path))) {
+            $this->perfomOptimize(public_path($path));
+        }
+
+        return $path;
     }
+
 
     /**
      * Uploadable fields getter.
@@ -124,16 +134,6 @@ trait UploadableModelTrait
         }
     }
 
-    /**
-     * @param $file string
-     * @return string
-     */
-    private function createFileName($file)
-    {
-        $path = pathinfo($file);
-
-        return uniqid() . '_' . str_slug($path['filename'], '_') . '.' . $path['extension'];
-    }
 
     /**
      * Delete an existing 'uploadable' file in
@@ -169,14 +169,6 @@ trait UploadableModelTrait
         return false;
     }
 
-    /**
-     * @return string
-     */
-    public function getUploadDir()
-    {
-        $date = new Carbon();
-        return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
-    }
 
     /**
      * @param string $upload_dir
