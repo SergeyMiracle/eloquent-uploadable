@@ -30,7 +30,7 @@ Our model's `$uploadables` is an array of file input name attributes which you'd
 
 `$cropped` is an array of file input name which you'd like to be cropped.
 
-Setup 'upload' disk in `config/filesystems.php`
+Setup 'upload' disk in `config/filesystems.php` or set custom disk name in config
 
 ```
 'disks' => [

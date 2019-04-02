@@ -85,7 +85,7 @@ trait UploadableModelTrait
     private function moveFile($file)
     {
         try {
-            $path = \Storage::disk('upload')->putFileAs($this->getUploadDir(), $file, $this->createFileName($file->getClientOriginalName()));
+            $path = \Storage::disk(config('uploadable.disk'))->putFileAs($this->getUploadDir(), $file, $this->createFileName($file->getClientOriginalName()));
         } catch (\Exception $e) {
             throw new FileException($e->getMessage());
         }
