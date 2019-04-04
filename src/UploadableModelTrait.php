@@ -142,30 +142,7 @@ trait UploadableModelTrait
      */
     private function deleteExisting($key)
     {
-        if (str_contains($this->original[$key], 'storage')) return true;
-
-        if ($this->is_json($this->original[$key])) {
-            $key = json_decode($this->original[$key]);
-
-            foreach ($key as $path) {
-                if (str_contains($path, 'storage')) continue;
-
-                $path = public_path($path);
-
-                if (file_exists($path) && is_file($path))
-                    unlink($path);
-            }
-
-            return true;
-        }
-
-        $path = public_path($this->original[$key]);
-
-        if (file_exists($path) && is_file($path)) {
-            return unlink($path);
-        }
-
-        return false;
+        return \Storage::disk(config('uploadable.disk'))->delete($file);
     }
 
 

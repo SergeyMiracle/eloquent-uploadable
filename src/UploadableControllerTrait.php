@@ -23,10 +23,12 @@ trait UploadableControllerTrait
             throw new FileException($e->getMessage());
         }
 
-        $path = config('uploadable.root') . $path;
+        if (config('uploadable.images.optimize')) {
+            $mime = \Storage::disk(config('uploadable.disk'))->getMimetype($path);
 
-        if (config('uploadable.images.optimize') && getimagesize(public_path($path))) {
-            $this->perfomOptimize(public_path($path));
+            if (strpos($mime, 'image')) {
+                $this->perfomOptimize($path);
+            }
         }
 
         return $path;
@@ -55,8 +57,6 @@ trait UploadableControllerTrait
      */
     private function deleteIfExists($file)
     {
-        if (file_exists($file) && is_file($file)) {
-            unlink($file);
-        }
+       return \Storage::disk(config('uploadable.disk'))->delete($file);
     }
 }
