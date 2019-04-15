@@ -7,7 +7,7 @@ use RuntimeException;
 
 trait UploadableModelTrait
 {
-    use UtilsTrait;
+    use UploadableUtilsTrait;
 
     /**
      * Boot the trait's observer.

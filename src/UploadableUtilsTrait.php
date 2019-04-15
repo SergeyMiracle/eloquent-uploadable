@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SergeyMiracle\Uploadable\Exceptions\FileException;
 
-trait UtilsTrait
+trait UploadableUtilsTrait
 {
     /**
      * @return string
