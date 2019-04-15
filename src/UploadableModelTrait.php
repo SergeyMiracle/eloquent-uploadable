@@ -2,8 +2,8 @@
 
 namespace SergeyMiracle\Uploadable;
 
-use Carbon\Carbon;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Exception;
+use RuntimeException;
 
 trait UploadableModelTrait
 {
@@ -14,7 +14,7 @@ trait UploadableModelTrait
      *
      * @return void
      */
-    public static function bootUploadableModelTrait()
+    public static function bootUploadableModelTrait(): void
     {
         static::observe(new UploadableModelObserver());
     }
@@ -24,18 +24,22 @@ trait UploadableModelTrait
      * When saving a model, upload any 'uploadable' fields.
      *
      * @return void
+     * @throws Exceptions\FileException
+     * @throws Exception
      */
-    public function performUploads()
+    public function performUploads(): void
     {
         $this->checkForUploadables();
 
+        $request = app('request');
+
         foreach ($this->getUploadables() as $key) {
-            if (request()->hasFile($key)) {
+            if ($request->hasFile($key)) {
                 if ($this->original && $this->original[$key]) {
-                    $this->deleteExisting($key);
+                    $this->removeFile($key);
                 }
 
-                $files = request()->file($key);
+                $files = $request->file($key);
 
                 if (is_array($files)) {
                     $output = [];
@@ -47,18 +51,7 @@ trait UploadableModelTrait
                 } else {
                     $this->attributes[$key] = $this->moveFile($files);
                 }
-
-                $this->performCrop();
             }
-        }
-    }
-
-    private function performCrop()
-    {
-        if (!$this->cropped) return;
-
-        foreach ($this->cropped as $key => $attr) {
-            \Image::make(public_path($this->attributes[$key]))->fit($attr['width'], $attr['height'])->save();
         }
     }
 
@@ -66,37 +59,15 @@ trait UploadableModelTrait
      * When deleting a model, cleanup the file system too.
      *
      * @return void
+     * @throws Exception
      */
-    public function performDeletes()
+    public function performDeletes(): void
     {
         $this->checkForUploadables();
 
         foreach ($this->getUploadables() as $key) {
-            $this->deleteExisting($key);
+            $this->removeFile($this->attributes[$key]);
         }
-    }
-
-    /**
-     * Save file on disk
-     *
-     * @param $file \Illuminate\Http\UploadedFile;
-     * @return string
-     */
-    private function moveFile($file)
-    {
-        try {
-            $path = \Storage::disk(config('uploadable.disk'))->putFileAs($this->getUploadDir(), $file, $this->createFileName($file->getClientOriginalName()));
-        } catch (\Exception $e) {
-            throw new FileException($e->getMessage());
-        }
-
-        $path = config('uploadable.root') . $path;
-
-        if (config('uploadable.images.optimize') && getimagesize(public_path($path))) {
-            $this->perfomOptimize(public_path($path));
-        }
-
-        return $path;
     }
 
 
@@ -105,7 +76,7 @@ trait UploadableModelTrait
      *
      * @return array
      */
-    public function getUploadables()
+    public function getUploadables(): array
     {
         return $this->uploadables;
     }
@@ -115,7 +86,7 @@ trait UploadableModelTrait
      *
      * @param array $uploadables
      */
-    public function setUploadables($uploadables)
+    public function setUploadables($uploadables): void
     {
         $this->uploadables = $uploadables;
     }
@@ -124,37 +95,21 @@ trait UploadableModelTrait
      * Check is $uploadables is a non-empty array.
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
-    private function checkForUploadables()
+    private function checkForUploadables(): void
     {
         if (!$this->getUploadables()) {
-            throw new \Exception('$this->uploadables must be a non-empty array.');
+            throw new RuntimeException('$this->uploadables must be a non-empty array.');
         }
-    }
-
-
-    /**
-     * Delete an existing 'uploadable' file in
-     * the filesystem when deleting a Model.
-     * @param   string $key
-     * @return  bool
-     */
-    private function deleteExisting($key)
-    {
-        return \Storage::disk(config('uploadable.disk'))->delete($file);
     }
 
 
     /**
      * @param string $upload_dir
      */
-    public function setUploadDir(string $upload_dir)
+    public function setUploadDir(string $upload_dir): void
     {
         $this->upload_dir = $upload_dir;
-    }
-
-    private function is_json($string) {
-        return is_array(json_decode($string, true));
     }
 }

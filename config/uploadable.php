@@ -1,12 +1,7 @@
 <?php
 
 return [
-    'disk' => 'upload',
+    'disk' => 'local',
 
-    'root' => '/upload/', // slashes in start and end of path required
-
-    'images' => [
-        'optimize' => false,  // optimize images using spatie/image-optimizer
-        'max_height' => 900  // auto resize image to a height when optimizing and constrain aspect ratio (auto width)
-    ]
+    'root' => '/', // slashes in start and end of path required
 ];

@@ -9,10 +9,10 @@ class UploadableModelObserver
     /**
      * Trigger function when saving a model (creating).
      *
-     * @param  Model  $model
+     * @param Model $model
      * @return void
      */
-    public function saving(Model $model)
+    public function saving(Model $model): void
     {
         $model->performUploads();
     }
@@ -20,10 +20,10 @@ class UploadableModelObserver
     /**
      * Trigger function when deleting a model.
      *
-     * @param  Model  $model
+     * @param Model $model
      * @return void
      */
-    public function deleting(Model $model)
+    public function deleting(Model $model): void
     {
         $model->performDeletes();
     }

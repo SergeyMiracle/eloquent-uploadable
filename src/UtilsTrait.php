@@ -3,31 +3,22 @@
 namespace SergeyMiracle\Uploadable;
 
 use Carbon\Carbon;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
+use Exception;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use SergeyMiracle\Uploadable\Exceptions\FileException;
 
 trait UtilsTrait
 {
-    private function perfomOptimize($path)
-    {
-        [$width, $height] = getimagesize($path);
-
-        if ($height > config('uploadable.images.max_height')) {
-            \Image::make($path)->resize(null, config('uploadable.images.max_height'), function ($constraint) {
-                $constraint->aspectRatio();
-            })->save();
-        }
-
-        $optimizerChain = OptimizerChainFactory::create();
-        $optimizerChain->optimize($path);
-    }
-
-
     /**
      * @return string
+     * @throws Exception
      */
-    public function getUploadDir()
+    protected function getUploadDir(): string
     {
         $date = new Carbon();
+
         return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
     }
 
@@ -36,10 +27,39 @@ trait UtilsTrait
      * @param $file string
      * @return string
      */
-    private function createFileName($file)
+    protected function createFileName($file): string
     {
         $path = pathinfo($file);
 
-        return uniqid() . '_' . str_slug($path['filename'], '_') . '.' . $path['extension'];
+        return Str::slug($path['filename'], '_') . '.' . $path['extension'];
+    }
+
+    /**
+     * Save file on disk
+     *
+     * @param $file UploadedFile;
+     * @return string
+     * @throws FileException
+     */
+    public function moveFile($file): string
+    {
+        try {
+            $path = Storage::disk(config('uploadable.disk'))->putFileAs($this->getUploadDir(), $file, $this->createFileName($file->getClientOriginalName()));
+        } catch (Exception $e) {
+            throw new FileException($e->getMessage());
+        }
+
+        return $path;
+    }
+
+    /**
+     * Remove file
+     *
+     * @param $file
+     * @return bool
+     */
+    public function removeFile($file): bool
+    {
+        return Storage::disk(config('uploadable.disk'))->delete($file);
     }
 }
