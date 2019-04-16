@@ -2,6 +2,9 @@
 
 A trait to automatically handle file uploads for Laravel Eloquent models.
 
+## Installation
+`composer require sergeymiracle/eloquent-uploadable`
+
 ## Example Usage
 
 ```
@@ -29,9 +32,9 @@ On saving array of files, a json encoded string saved in database.
 `UploadableFileHandler` can be used directly
 
 ```
-    UploadableFileHandler::save($dir_name, Illuminate\Http\UploadedFile $file, $file_name);
+UploadableFileHandler::save($dir_name, Illuminate\Http\UploadedFile $file, $file_name);
     
-    UploadableFileHandler::delete($file_path);
+UploadableFileHandler::delete($file_path);
 ```
 
 ## Changelog
