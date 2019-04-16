@@ -14,14 +14,14 @@ class Post extends Model {
 
   protected $uploadables = ['featured_image'];
 
-  protected $upload_dir = '.images';
+  protected $upload_dir = '.images'; // optional
 
 }
 ```
 
 Our model's `$uploadables` is an array of file input name attributes which you'd like to be automatically handled by the trait.
 
-`$upload_dir` destination folder
+`$upload_dir` destination folder prefix, can be omitted
 
 
 On saving array of files, a json encoded string saved in database.
@@ -35,5 +35,4 @@ On saving array of files, a json encoded string saved in database.
 ```
 
 ## Changelog
-2.0.0 - removed UtilsTrait.php and UploadableControllerTrait.php, UploadableFileHandler can be used instead
-        php 7.2
+* 2.0.0 - **removed UtilsTrait.php and UploadableControllerTrait.php, UploadableFileHandler can be used instead, php 7.2**
