@@ -2,13 +2,13 @@
 
 namespace SergeyMiracle\Uploadable;
 
+use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 trait UploadableModelTrait
 {
-    use UploadableUtilsTrait;
-
     /**
      * Boot the trait's observer.
      *
@@ -36,7 +36,7 @@ trait UploadableModelTrait
         foreach ($this->getUploadables() as $key) {
             if ($request->hasFile($key)) {
                 if ($this->original && $this->original[$key]) {
-                    $this->removeFile($key);
+                    UploadableFileHandler::delete($key);
                 }
 
                 $files = $request->file($key);
@@ -44,12 +44,20 @@ trait UploadableModelTrait
                 if (is_array($files)) {
                     $output = [];
                     foreach ($files as $file) {
-                        $output[] = $this->moveFile($file);
+                        $output[] = UploadableFileHandler::save(
+                            $this->getUploadDir(),
+                            $file,
+                            $this->createFileName($file->getClientOriginalname())
+                        );
                     }
 
                     $this->attributes[$key] = json_encode($output);
                 } else {
-                    $this->attributes[$key] = $this->moveFile($files);
+                    $this->attributes[$key] = UploadableFileHandler::save(
+                        $this->getUploadDir(),
+                        $files,
+                        $this->createFileName($files->getClientOriginalname())
+                    );
                 }
             }
         }
@@ -66,7 +74,7 @@ trait UploadableModelTrait
         $this->checkForUploadables();
 
         foreach ($this->getUploadables() as $key) {
-            $this->removeFile($this->attributes[$key]);
+            UploadableFileHandler::delete($this->attributes[$key]);
         }
     }
 
@@ -79,16 +87,6 @@ trait UploadableModelTrait
     public function getUploadables(): array
     {
         return $this->uploadables;
-    }
-
-    /**
-     * Uploadable fields setter.
-     *
-     * @param array $uploadables
-     */
-    public function setUploadables($uploadables): void
-    {
-        $this->uploadables = $uploadables;
     }
 
     /**
@@ -106,10 +104,25 @@ trait UploadableModelTrait
 
 
     /**
-     * @param string $upload_dir
+     * @return string
+     * @throws Exception
      */
-    public function setUploadDir(string $upload_dir): void
+    protected function getUploadDir(): string
     {
-        $this->upload_dir = $upload_dir;
+        $date = new Carbon();
+
+        return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
+    }
+
+
+    /**
+     * @param $file string
+     * @return string
+     */
+    protected function createFileName($file): string
+    {
+        $path = pathinfo($file);
+
+        return Str::slug($path['filename'], '_') . '.' . $path['extension'];
     }
 }

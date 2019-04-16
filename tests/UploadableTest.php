@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UploadableTest extends TestCase
 {
-    public function test_model_can_upload_end_delete_file()
+    public function test_model_can_upload_end_delete_file(): void
     {
         $this->app['router']->addRoute(
             'POST',
