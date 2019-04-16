@@ -35,4 +35,4 @@ On saving array of files, a json encoded string saved in database.
 ```
 
 ## Changelog
-* 2.0.0 - ***removed UtilsTrait.php and UploadableControllerTrait.php, UploadableFileHandler can be used instead, php 7.2***
+* 2.0.0 - *removed UtilsTrait.php and UploadableControllerTrait.php, UploadableFileHandler can be used instead, php 7.2*
