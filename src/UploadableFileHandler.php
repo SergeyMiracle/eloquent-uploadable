@@ -15,13 +15,15 @@ class UploadableFileHandler
      * @param $file UploadedFile;
      * @param $directory string
      * @param $filename string
+     * @param null $disk
      * @return string
      * @throws FileException
      */
-    public static function save(string $directory, UploadedFile $file, string $filename): string
+    public static function save(string $directory, UploadedFile $file, string $filename, $disk = null): string
     {
         try {
-            $path = Storage::disk(config('uploadable.disk'))->putFileAs($directory, $file, $filename);
+            $path = Storage::disk($disk ?? config('uploadable.disk'))
+                ->putFileAs($directory, $file, $filename);
         } catch (Exception $e) {
             throw new FileException($e->getMessage());
         }
@@ -33,10 +35,11 @@ class UploadableFileHandler
      * Remove file
      *
      * @param $file string
+     * @param null $disk
      * @return bool
      */
-    public static function delete(string $file): bool
+    public static function delete(string $file, $disk = null): bool
     {
-        return Storage::disk(config('uploadable.disk'))->delete($file);
+        return Storage::disk($disk ?? config('uploadable.disk'))->delete($file);
     }
 }

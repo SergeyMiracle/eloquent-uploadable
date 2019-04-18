@@ -5,7 +5,6 @@ namespace SergeyMiracle\Uploadable;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Str;
-use RuntimeException;
 
 trait UploadableModelTrait
 {
@@ -29,14 +28,15 @@ trait UploadableModelTrait
      */
     public function performUploads(): void
     {
-        $this->checkForUploadables();
+        $options = $this->getUploadableOptions();
+        $uploadDir = $this->getUploadDir($options);
 
         $request = app('request');
 
-        foreach ($this->getUploadables() as $key) {
+        foreach ($options['attributes'] as $key) {
             if ($request->hasFile($key)) {
                 if ($this->original && $this->original[$key]) {
-                    UploadableFileHandler::delete($key);
+                    UploadableFileHandler::delete($key, $options['attributes'] ?? null);
                 }
 
                 $files = $request->file($key);
@@ -45,18 +45,20 @@ trait UploadableModelTrait
                     $output = [];
                     foreach ($files as $file) {
                         $output[] = UploadableFileHandler::save(
-                            $this->getUploadDir(),
+                            $uploadDir,
                             $file,
-                            $this->createFileName($file->getClientOriginalname())
+                            $this->createFileName($file->getClientOriginalname()),
+                            $options['disk'] ?? null
                         );
                     }
 
                     $this->attributes[$key] = json_encode($output);
                 } else {
                     $this->attributes[$key] = UploadableFileHandler::save(
-                        $this->getUploadDir(),
+                        $uploadDir,
                         $files,
-                        $this->createFileName($files->getClientOriginalname())
+                        $this->createFileName($files->getClientOriginalname()),
+                        $options['disk'] ?? null
                     );
                 }
             }
@@ -71,47 +73,25 @@ trait UploadableModelTrait
      */
     public function performDeletes(): void
     {
-        $this->checkForUploadables();
+        $options = $this->getUploadableOptions();
 
-        foreach ($this->getUploadables() as $key) {
-            UploadableFileHandler::delete($this->attributes[$key]);
+        foreach ($options['attributes'] as $key) {
+            UploadableFileHandler::delete($this->attributes[$key], $options['disk'] ?? null);
         }
     }
 
 
     /**
-     * Uploadable fields getter.
-     *
-     * @return array
-     */
-    public function getUploadables(): array
-    {
-        return $this->uploadables;
-    }
-
-    /**
-     * Check is $uploadables is a non-empty array.
-     *
-     * @return void
-     * @throws Exception
-     */
-    private function checkForUploadables(): void
-    {
-        if (!$this->getUploadables()) {
-            throw new RuntimeException('$this->uploadables must be a non-empty array.');
-        }
-    }
-
-
-    /**
+     * @param $options
      * @return string
      * @throws Exception
      */
-    protected function getUploadDir(): string
+    protected function getUploadDir($options): string
     {
         $date = new Carbon();
+        $dir = $options['disk'] ?? '';
 
-        return $this->upload_dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
+        return $dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
     }
 
 

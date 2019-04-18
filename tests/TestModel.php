@@ -19,9 +19,14 @@ class TestModel extends Model
 
     public $timestamps = false;
 
-    protected $uploadables = [
-        'image'
-    ];
-
-    protected $upload_dir = '/';
+    public function getUploadableOptions(): array
+    {
+        return [
+            'attributes' => [
+                'image'
+            ],
+            'directory' => 'images',
+            'disk' => 'local'
+        ];
+    }
 }
