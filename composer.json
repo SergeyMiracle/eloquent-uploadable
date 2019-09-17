@@ -3,10 +3,10 @@
     "description": "A trait to automatically handle file uploads for Laravel models.",
     "require": {
         "php": ">=7.2",
-        "illuminate/support": "~5.8.0",
-        "illuminate/filesystem": "~5.8.0",
-        "illuminate/http": "~5.8.0",
-        "illuminate/database": "~5.8.0"
+        "illuminate/support": ">=5.8 <6.0",
+        "illuminate/filesystem": ">=5.8 <6.0",
+        "illuminate/http": ">=5.8 <6.0",
+        "illuminate/database": ">=5.8 <6.0"
     },
     "require-dev": {
         "orchestra/testbench": "^3.5",
