@@ -34,5 +34,6 @@ class Post extends Model {
 On saving array of files, a json encoded string saved in database.
 
 ## Changelog
+* 3.1.0 - *added new config options for filename generation*
 * 3.0.0 - *remove options - uploadables, use function getUploadableOptions() instead*
 * 2.0.0 - *removed UtilsTrait.php and UploadableControllerTrait.php, UploadableFileHandler can be used instead, php 7.2*
