@@ -103,7 +103,7 @@ trait UploadableModelTrait
     {
         $path = pathinfo($file);
 
-        $name = str_replace($path['extension'], '', $path['filename']);
+        $name = trim($path['filename']);
 
         if (config('uploadable.file_name.slugify') === true) {
             $name = Str::slug($name, '_');
