@@ -89,7 +89,7 @@ trait UploadableModelTrait
     protected function getUploadDir($options): string
     {
         $date = new Carbon();
-        $dir = $options['disk'] ?? '';
+        $dir = $options['directory'] ?? '';
 
         return $dir . DIRECTORY_SEPARATOR . $date->year . DIRECTORY_SEPARATOR . $date->month;
     }
