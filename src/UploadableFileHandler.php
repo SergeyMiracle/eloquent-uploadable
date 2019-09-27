@@ -24,6 +24,7 @@ class UploadableFileHandler
         try {
             $path = Storage::disk($disk ?? config('uploadable.disk'))
                 ->putFileAs($directory, $file, $filename);
+            event('uploadable.file.uploaded', ['path' => $path]);
         } catch (Exception $e) {
             throw new FileException($e->getMessage());
         }
@@ -40,6 +41,8 @@ class UploadableFileHandler
      */
     public static function delete(string $file, $disk = null): bool
     {
+        event('uploadable.file.deleted', ['path' => $file]);
+
         return Storage::disk($disk ?? config('uploadable.disk'))->delete($file);
     }
 }
