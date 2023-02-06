@@ -76,7 +76,7 @@ trait UploadableModelTrait
         $options = $this->getUploadableOptions();
 
         foreach ($options['attributes'] as $key) {
-            if ($this->attributes[$key]) {
+            if (isset($this->attributes[$key]) && !is_null($this->attributes[$key])) {
                 UploadableFileHandler::delete($this->attributes[$key], $options['disk'] ?? null);
             }
         }
